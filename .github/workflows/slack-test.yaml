@@ -17,14 +17,24 @@ jobs:
           # Simulate failure for testing
           exit 1
 
-      - name: Notify Slack on failure
+      - name: Notify Slack (Channel message)
         if: failure()
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
           notify_when: "failure"
-          notification_title: "{workflow} failed"
+          notification_title: "❌ {workflow} failed"
           message_format: "{emoji} *{workflow}* failed in <{repo_url}|{repo}>"
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_GROUP: ${{ secrets.SLACK_WEBHOOK_GROUP }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_CHANNEL }}
+      
+      - name: Notify Slack (Personnal message)
+        if: failure()
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+          notification_title: "👤 Direct alert: {workflow} failed"
+          message_format: "{emoji} Heads-up! *{workflow}* failed — check <{repo_url}|{repo}>"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DM }}
